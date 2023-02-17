@@ -10,6 +10,7 @@ import sqlalchemy
 from sqlalchemy import Column, String, DateTime
 from sqlalchemy.ext.declarative import declarative_base
 import uuid
+import hashlib
 
 time = "%Y-%m-%dT%H:%M:%S.%f"
 
@@ -42,6 +43,11 @@ class BaseModel:
                 self.updated_at = datetime.utcnow()
             if kwargs.get("id", None) is None:
                 self.id = str(uuid.uuid4())
+            if kwargs['__class__'] == 'User':
+                if 'password' in kwargs:
+                    pwd = kwargs['password']
+                    hash_pwd = hashlib.md5(p.encode('utf8')).hexdigest()
+                    setattr(self, password, hash_pwd)
         else:
             self.id = str(uuid.uuid4())
             self.created_at = datetime.utcnow()
